@@ -5,16 +5,17 @@ import { Routes } from '@interfaces/routes.interface';
 import { Router } from 'express';
 
 class VolumesRoute implements Routes {
+  private volumesController: VolumesController = new VolumesController();
+
   path: string = '/volumes';
   router = Router();
-  //  volumesController = new VolumesController();
 
-  constructor(private volumesController: VolumesController) {
+  constructor() {
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}/:id`, validationMiddleware(VolumesSearchParams, 'body'), this.volumesController.getVolumeById);
+    this.router.get(`${this.path}/:id`, this.volumesController.getVolumeById);
     this.router.get(`${this.path}/`, validationMiddleware(VolumesSearchParams, 'body'), this.volumesController.searchVolumes);
   }
 }

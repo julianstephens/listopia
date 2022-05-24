@@ -4,7 +4,7 @@ import UserService from '@services/users.service';
 import { NextFunction, Request, Response } from 'express';
 
 class UsersController {
-  userService = new UserService();
+  private userService = new UserService();
 
   getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

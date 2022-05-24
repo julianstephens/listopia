@@ -3,9 +3,9 @@ import IndexController from '@controllers/index.controller';
 import { Routes } from '@interfaces/routes.interface';
 
 class IndexRoute implements Routes {
-   path = '/';
-   router = Router();
-   indexController = new IndexController();
+  path = '/';
+  router = Router();
+  indexController = new IndexController();
 
   constructor() {
     this.initializeRoutes();

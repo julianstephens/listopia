@@ -13,9 +13,9 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
 class App {
-   app: express.Application;
-   env: string;
-   port: string | number;
+  app: express.Application;
+  env: string;
+  port: string | number;
 
   constructor(routes: Routes[]) {
     this.app = express();
@@ -28,7 +28,7 @@ class App {
     this.initializeErrorHandling();
   }
 
-   listen() {
+  listen() {
     this.app.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} =======`);
@@ -37,7 +37,7 @@ class App {
     });
   }
 
-   getServer() {
+  getServer() {
     return this.app;
   }
 

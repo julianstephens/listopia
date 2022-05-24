@@ -6,9 +6,9 @@ import authMiddleware from '@middlewares/auth.middleware';
 import validationMiddleware from '@middlewares/validation.middleware';
 
 class AuthRoute implements Routes {
-   path = '/';
-   router = Router();
-   authController = new AuthController();
+  path = '/';
+  router = Router();
+  authController = new AuthController();
 
   constructor() {
     this.initializeRoutes();

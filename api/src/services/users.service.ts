@@ -5,8 +5,11 @@ import { isEmpty } from '@utils/util';
 import { hash } from 'bcrypt';
 
 class UserService {
-  users = new PrismaClient().user;
+  private users = new PrismaClient().user;
 
+  /**
+   * @returns {Promise<User[]>}
+   */
   async findAllUser(): Promise<User[]> {
     const allUser: User[] = await this.users.findMany();
     return allUser;

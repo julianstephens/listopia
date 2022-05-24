@@ -4,6 +4,8 @@ import { Routes } from '@interfaces/routes.interface';
 import validationMiddleware from '@middlewares/validation.middleware';
 import { Router } from 'express';
 
+// TODO: add comments and type definitions to generated files
+
 class UsersRoute implements Routes {
   path = '/users';
   router = Router();

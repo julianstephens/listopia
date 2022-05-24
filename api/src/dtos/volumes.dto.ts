@@ -1,4 +1,6 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { GBVolume } from '@/utils/types';
+import { IsArray, isEAN, isEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { url } from 'inspector';
 
 export class VolumesDto {
   @IsString()
@@ -22,65 +24,120 @@ export class VolumesDto {
   @IsString()
   thumbnailLink: string;
 
-  static toDto(res): VolumesDto {
-    let vDto = new VolumesDto();
+  /**
+   * Converts GBVolume to VolumesDto
+   * @param res - Books API response
+   * @returns formatted volume
+   */
+  static BuildDto(res: GBVolume): VolumesDto {
+    const vDto = new VolumesDto();
     {
       (vDto.id = res.id),
-        (vDto.title = res.volumeInfo.title),
-        (vDto.authors = res.volumeInfo.authors),
-        (vDto.description = res.volumeInfo.description),
-        (vDto.avgRating = res.volumeInfo.averageRating),
-        (vDto.ratingsCount = res.volumeInfo.ratingsCount),
-        (vDto.thumbnailLink = res.volumeInfo.imageLinks.smallThumbnail);
+        (vDto.title = res?.volumeInfo?.title),
+        (vDto.authors = res?.volumeInfo?.authors),
+        (vDto.description = res?.volumeInfo?.description),
+        (vDto.avgRating = res?.volumeInfo?.averageRating),
+        (vDto.ratingsCount = res?.volumeInfo?.ratingsCount),
+        (vDto.thumbnailLink = res?.volumeInfo?.imageLinks?.smallThumbnail);
     }
 
     return vDto;
   }
-}
 
-export class VolumesSearchParams {
-  text: string;
-  intitle?: string;
-  inauthor?: string;
-  inpublisher?: string;
-  insubject?: string;   // keyword found in category list
-  isbn?: string;
-  lccn?: string;   // Library of Congress Control Number
-  oclc?: string;   // Online Computer Library Center number
-  startIndex?: number;
-  maxResults?: number;
+  /**
+   * Converts GBVolumeList to VolumesDto
+   * @param res - Books API response
+   * @returns formatted list of volumes
+   */
+  static BuildDtoList(res: GBVolume[]): VolumesDto[] {
+    let dtoArr: VolumesDto[] = [];
 
-  static toString(params: VolumesSearchParams): string {
-    let res = `&text:${params.text}`;
+    for (const v of res) {
+      dtoArr.push(this.BuildDto(v));
+    }
 
-    if (params.intitle) {
-      res += `&intitle:${params.intitle}`;
-    }
-    if (params.inauthor) {
-      res += `&inauthor:${params.inauthor}`;
-    }
-    if (params.inpublisher) {
-      res += `&inpublisher=${params.inpublisher}`;
-    }
-    if (params.insubject) {
-      res += `&insubject=${params.insubject}`;
-    }
-    if (params.isbn) {
-      res += `&isbn=${params.isbn}`;
-    }
-    if (params.lccn) {
-      res += `&lccn=${params.lccn}`;
-    }
-    if (params.oclc) {
-      res += `&oclc=${params.oclc}`;
-    }
-    res += '&projection=lite';
-
-    return res;
+    return dtoArr;
   }
 }
 
-export class VolumesResponse {
-  status: number;
-  data: VolumesDto;
+export class VolumesSearchParams {
+  @IsOptional()
+  @IsString()
+  intitle?: string;
+
+  @IsOptional()
+  @IsString()
+  inauthor?: string;
+
+  @IsOptional()
+  @IsString()
+  inpublisher?: string;
+
+  @IsOptional()
+  @IsString()
+  insubject?: string; // keyword found in category list
+
+  @IsOptional()
+  @IsString()
+  isbn?: string;
+
+  @IsOptional()
+  @IsString()
+  lccn?: string; // Library of Congress Control Number
+
+  @IsOptional()
+  @IsString()
+  oclc?: string; // Online Computer Library Center number
+
+  @IsOptional()
+  @IsNumber()
+  startIndex?: number;
+
+  @IsOptional()
+  @IsNumber()
+  maxResults?: number;
+
+  /**
+   * Formats query parameters to url safe string
+   * @param params {VolumesSearchParams} - API query parameters
+   * @returns {string}
+   */
+  static toString(params: VolumesSearchParams): string {
+    let queries = [];
+    if (params.intitle) {
+      queries.push(`intitle:${params.intitle}`);
+    }
+    if (params.inauthor) {
+      queries.push(`inauthor:${params.inauthor}`);
+    }
+    if (params.inpublisher) {
+      queries.push(`inpublisher=${params.inpublisher}`);
+    }
+    if (params.insubject) {
+      queries.push(`insubject=${params.insubject}`);
+    }
+    if (params.isbn) {
+      queries.push(`isbn=${params.isbn}`);
+    }
+    if (params.lccn) {
+      queries.push(`lccn=${params.lccn}`);
+    }
+    if (params.oclc) {
+      queries.push(`oclc=${params.oclc}`);
+    }
+
+    let urlString = 'q=';
+    urlString += queries[0];
+
+    if (queries.length === 1) {
+      return urlString;
+    }
+
+    queries.shift();
+    for (let q of queries) {
+      urlString += `&${q}`
+    }
+
+    return urlString;
+  }
 }
