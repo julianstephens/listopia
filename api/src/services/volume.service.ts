@@ -1,9 +1,11 @@
-import { VolumesDto, VolumesSearchParams } from '@/dtos/volumes.dto';
+import { VolumesDto, VolumesSearchParams, VolumesSearchResp } from '@/dtos/volumes.dto';
 import { logger } from '@/utils/logger';
 import { APIResp } from '@/utils/types';
 import { isEmpty } from '@/utils/util';
 import { HttpException } from '@exceptions/HttpException';
 import axios from 'axios';
+
+const MAX_RESULTS = 40;
 
 // TODO: remove logger calls
 class VolumeService {
@@ -25,29 +27,35 @@ class VolumeService {
 
       return { status: res.status, data: volume };
     } catch (error) {
-      throw new HttpException(error.status, "There was an issue finding this volume. Please try again.");
+      throw new HttpException(error.status, 'There was an issue finding this volume. Please try again.');
     }
   }
 
   /**
-   * Fuzzy search volumes
+   * Search volumes
    * @param params {VolumesSearchParams} - Books API query parameters
    * @returns API response status and formatted payload
    */
-  async searchVolumes(params: VolumesSearchParams): Promise<APIResp<VolumesDto[]>> {
-    if (isEmpty(params)) throw new HttpException(400, "Please provide valid search parameters.");
+  async searchVolumes(params: VolumesSearchParams): Promise<APIResp<VolumesSearchResp>> {
+    if (isEmpty(params)) throw new HttpException(400, 'Please provide valid search parameters.');
 
     const formattedParams = VolumesSearchParams.toString(params);
-    const url = `${this.urlStem}?${formattedParams}&key=${this.apiKey}`;
+    const url = `${this.urlStem}?${formattedParams}&maxResults=${MAX_RESULTS}&key=${this.apiKey}`;
     logger.info(`[GET] ${url}`);
 
     try {
       const res = await axios.get(url);
       const volumes: VolumesDto[] = VolumesDto.BuildDtoList(res.data.items);
 
-      return { status: res.status, data: volumes };
+      const data: VolumesSearchResp = {
+        totalItems: res.data.totalItems,
+        nextIndex: params.startIndex ? params.startIndex + MAX_RESULTS : MAX_RESULTS - 1,
+        items: volumes,
+      };
+
+      return { status: res.status, data: data };
     } catch (error) {
-      throw new HttpException(error.status, "There was an issue with your search. Please try again.");
+      throw new HttpException(error.status, 'There was an issue with your search. Please try again.');
     }
   }
 }

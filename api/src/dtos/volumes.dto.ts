@@ -1,6 +1,5 @@
 import { GBVolume } from '@/utils/types';
-import { IsArray, isEAN, isEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { url } from 'inspector';
+import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class VolumesDto {
   @IsString()
@@ -88,14 +87,9 @@ export class VolumesSearchParams {
   @IsOptional()
   @IsString()
   oclc?: string; // Online Computer Library Center number
-
   @IsOptional()
   @IsNumber()
-  startIndex?: number;
-
-  @IsOptional()
-  @IsNumber()
-  maxResults?: number;
+  startIndex?: number = 0;
 
   /**
    * Formats query parameters to url safe string
@@ -135,9 +129,21 @@ export class VolumesSearchParams {
 
     queries.shift();
     for (let q of queries) {
-      urlString += `&${q}`
+      urlString += `&${q}`;
     }
 
     return urlString;
   }
+}
+
+export class VolumesSearchResp {
+  @IsNumber()
+  totalItems: number;
+
+  @IsNumber()
+  nextIndex: number;
+
+  @IsNumber()
+  @ValidateNested()
+  items: VolumesDto[];
 }
