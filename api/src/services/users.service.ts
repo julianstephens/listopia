@@ -1,18 +1,18 @@
-import { hash } from 'bcrypt';
-import { PrismaClient, User } from '@prisma/client';
 import { CreateUserDto } from '@dtos/users.dto';
 import { HttpException } from '@exceptions/HttpException';
+import { PrismaClient, User } from '@prisma/client';
 import { isEmpty } from '@utils/util';
+import { hash } from 'bcrypt';
 
 class UserService {
-  public users = new PrismaClient().user;
+  users = new PrismaClient().user;
 
-  public async findAllUser(): Promise<User[]> {
+  async findAllUser(): Promise<User[]> {
     const allUser: User[] = await this.users.findMany();
     return allUser;
   }
 
-  public async findUserById(userId: number): Promise<User> {
+  async findUserById(userId: number): Promise<User> {
     if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
 
     const findUser: User = await this.users.findUnique({ where: { id: userId } });
@@ -21,7 +21,7 @@ class UserService {
     return findUser;
   }
 
-  public async createUser(userData: CreateUserDto): Promise<User> {
+  async createUser(userData: CreateUserDto): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
     const findUser: User = await this.users.findUnique({ where: { email: userData.email } });
@@ -32,7 +32,7 @@ class UserService {
     return createUserData;
   }
 
-  public async updateUser(userId: number, userData: CreateUserDto): Promise<User> {
+  async updateUser(userId: number, userData: CreateUserDto): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
     const findUser: User = await this.users.findUnique({ where: { id: userId } });
@@ -43,7 +43,7 @@ class UserService {
     return updateUserData;
   }
 
-  public async deleteUser(userId: number): Promise<User> {
+  async deleteUser(userId: number): Promise<User> {
     if (isEmpty(userId)) throw new HttpException(400, "You're not userId");
 
     const findUser: User = await this.users.findUnique({ where: { id: userId } });

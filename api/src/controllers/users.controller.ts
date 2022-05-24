@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response } from 'express';
-import { User } from '@prisma/client';
 import { CreateUserDto } from '@dtos/users.dto';
-import userService from '@services/users.service';
+import { User } from '@prisma/client';
+import UserService from '@services/users.service';
+import { NextFunction, Request, Response } from 'express';
 
 class UsersController {
-  public userService = new userService();
+  userService = new UserService();
 
-  public getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const findAllUsersData: User[] = await this.userService.findAllUser();
 
@@ -16,7 +16,7 @@ class UsersController {
     }
   };
 
-  public getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = Number(req.params.id);
       const findOneUserData: User = await this.userService.findUserById(userId);
@@ -27,7 +27,7 @@ class UsersController {
     }
   };
 
-  public createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: CreateUserDto = req.body;
       const createUserData: User = await this.userService.createUser(userData);
@@ -38,7 +38,7 @@ class UsersController {
     }
   };
 
-  public updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = Number(req.params.id);
       const userData: CreateUserDto = req.body;
@@ -50,7 +50,7 @@ class UsersController {
     }
   };
 
-  public deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = Number(req.params.id);
       const deleteUserData: User = await this.userService.deleteUser(userId);
