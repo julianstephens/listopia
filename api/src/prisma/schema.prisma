@@ -11,7 +11,30 @@ generator client {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String
+  created   DateTime @default(now())
+  modified  DateTime @updatedAt
+  List      List[]
+}
+
+model List {
+  id       Int        @id @default(autoincrement())
+  name     String
+  created  DateTime   @default(now())
+  modified DateTime   @updatedAt
+  owner    User       @relation(fields: [ownerId], references: [id])
+  ownerId  Int
+  ListItem ListItem[]
+}
+
+model ListItem {
+  id       Int      @id @default(autoincrement())
+  volumeId String
+  created  DateTime @default(now())
+  list     List     @relation(fields: [listId], references: [id])
+  listId   Int
 }
